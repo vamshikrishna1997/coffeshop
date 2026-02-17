@@ -1,0 +1,9 @@
+{
+  "name": "Aura Brew - AI Coffee Experience",
+  "description": "A premium digital coffee shop experience featuring an AI-powered personal barista, custom drink visualization, and intelligent menu recommendations.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
