@@ -32,4 +32,4 @@ jobs:
             docker build --no-cache -t coffe_fe:v1 .
 
             echo "Run container"
-            docker run -d --restart always --name coffe_fe -p 7001:7000 coffe_fe:v1
+            sudo docker run -d --restart always --name coffe_fe -p 7001:7000 coffe_fe:v1
