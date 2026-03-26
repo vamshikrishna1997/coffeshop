@@ -10,39 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Verify Files
-        run: |
-          pwd
-          ls -la
-          if [ -f Dockerfile ]; then
-            echo "Dockerfile exists"
-          else
-            echo "Dockerfile NOT found ❌"
-            exit 1
-          fi
-
-      - name: Build Docker Image
-        run: docker build --no-cache -t coffe_fe:v1 .
-
-      - name: Login to DockerHub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Tag Image
-        run: docker tag coffe_fe:v5 ${{ secrets.DOCKER_USERNAME }}/coffe_fe:v5
-
-      - name: Push Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/coffe_fe:v5
-
-      - name: Deploy to Server
+      - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            cd ~/coffeshop || exit
+
+            echo "Pull latest code"
+            git pull origin main
+
+            echo "Stop old container"
             docker ps -aq --filter "name=coffe_fe" | grep -q . && docker stop coffe_fe && docker rm -f coffe_fe || true
-            docker pull ${{ secrets.DOCKER_USERNAME }}/coffe_fe:v5
-            docker run -d --restart always --name coffe_fe -p 7001:7000 ${{ secrets.DOCKER_USERNAME }}/coffe_fe:v5
+
+            echo "Remove old image"
+            docker rmi coffe_fe:v1 || true
+
+            echo "Build new image"
+            docker build --no-cache -t coffe_fe:v1 .
+
+            echo "Run container"
+            docker run -d --restart always --name coffe_fe -p 7001:7000 coffe_fe:v1
