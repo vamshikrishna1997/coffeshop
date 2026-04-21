@@ -36,7 +36,7 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: '5',
-    name: 'Nitro Hibiscus Tea',
+    name: 'Nitro coffee',
     price: 5.00,
     category: 'Tea',
     description: 'Refreshing tartness infused with nitrogen for a silky mouthfeel.',
